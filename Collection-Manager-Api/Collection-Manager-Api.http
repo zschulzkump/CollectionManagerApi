@@ -1,0 +1,6 @@
+@Collection_Manager_Api_HostAddress = http://localhost:5250
+
+GET {{Collection_Manager_Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -14,4 +14,6 @@ public class Category
     public DateTime DateCreated { get; set; } = DateTime.Now;
     [Required]
     public DateTime DateModified { get; set; } = DateTime.Now;
+    
+    public ICollection<CollectionItem> CollectionItems { get; set; } = new List<CollectionItem>();
 }

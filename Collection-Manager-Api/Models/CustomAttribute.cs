@@ -14,4 +14,6 @@ public class CustomAttribute
     public DateTime DateCreated { get; set; } = DateTime.Now;
     [Required]
     public DateTime DateModified { get; set; } = DateTime.Now;
+    
+    public ICollection<CollectionItemCustomAttribute> CollectionItemsCustomAttributes { get; set; } = new List<CollectionItemCustomAttribute>();
 }

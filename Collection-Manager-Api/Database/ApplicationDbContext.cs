@@ -18,6 +18,20 @@ public class ApplicationDbContext : IdentityDbContext<User>
     {
         base.OnModelCreating(modelBuilder);
         
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(r => r.Id);
+            entity.Property(r => r.Token).HasMaxLength(200);
+            entity.HasIndex(r => r.Token).IsUnique();
+        });
+        
+        modelBuilder.Entity<RefreshToken>()
+            .HasOne(e => e.User)
+            .WithMany(e => e.RefreshTokens)
+            .HasForeignKey(e => e.UserId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+        
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(r => r.Id);
@@ -52,11 +66,13 @@ public class ApplicationDbContext : IdentityDbContext<User>
         modelBuilder.Entity<CollectionItem>()
             .HasOne(c => c.Category)
             .WithMany(c => c.CollectionItems)
-            .HasForeignKey(c => c.CategoryId);
+            .HasForeignKey(c => c.CategoryId)
+            .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CollectionItem>()
             .HasOne(c => c.Storage)
             .WithMany(s => s.CollectionItems)
-            .HasForeignKey(c => c.StorageId);
+            .HasForeignKey(c => c.StorageId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<CollectionItem>()
             .HasMany(c => c.Tags)
@@ -77,11 +93,13 @@ public class ApplicationDbContext : IdentityDbContext<User>
         modelBuilder.Entity<CollectionItemCustomAttribute>()
             .HasOne(c => c.CollectionItem)
             .WithMany(c => c.CollectionItemsCustomAttributes)
-            .HasForeignKey(c => c.CollectionItemId);
+            .HasForeignKey(c => c.CollectionItemId)
+            .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CollectionItemCustomAttribute>()
             .HasOne(c => c.CustomAttribute)
             .WithMany(c => c.CollectionItemsCustomAttributes)
-            .HasForeignKey(c => c.CustomAttributeId);
+            .HasForeignKey(c => c.CustomAttributeId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Tag>(entity =>
         {
@@ -107,7 +125,8 @@ public class ApplicationDbContext : IdentityDbContext<User>
         modelBuilder.Entity<ItemDocument>()
             .HasOne(r => r.CollectionItem)
             .WithMany(r => r.Documents)
-            .HasForeignKey(r => r.CollectionItemId);
+            .HasForeignKey(r => r.CollectionItemId)
+            .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<ItemImage>(entity =>
         {
@@ -117,12 +136,14 @@ public class ApplicationDbContext : IdentityDbContext<User>
         modelBuilder.Entity<ItemImage>()
             .HasOne(r => r.CollectionItem)
             .WithMany(r => r.Images)
-            .HasForeignKey(r => r.CollectionItemId);
+            .HasForeignKey(r => r.CollectionItemId)
+            .OnDelete(DeleteBehavior.Cascade);
 
 
 
     }
     
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Storage> Storages { get; set; }
     public DbSet<CollectionItem> CollectionItems { get; set; }

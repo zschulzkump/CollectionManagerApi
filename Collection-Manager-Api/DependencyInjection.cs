@@ -1,5 +1,6 @@
 using Collection_Manager_Api.Database;
 using Collection_Manager_Api.Models;
+using Collection_Manager_Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
+        services.AddTransient<IAccountService, AccountService>();
+        services.AddScoped<ITokenProviderService, TokenProviderService>();
+        services.AddTransient<IAuthenticationService, AuthenticationService>();
         return services;
     }
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)

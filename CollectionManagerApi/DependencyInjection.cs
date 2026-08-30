@@ -1,3 +1,4 @@
+using CollectionManagerApi.Controllers.v1;
 using CollectionManagerApi.Database;
 using CollectionManagerApi.Models;
 using CollectionManagerApi.Services;

@@ -28,6 +28,8 @@ public class AccountService : IAccountService
     }
     public async Task<BaseResponse<User>> Register(RegisterUser request, CancellationToken token = default)
     {
+        var userCount = await _context.Users.CountAsync(token);
+        var createAdmin = (userCount == 0) ? true : false;
         await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken: token);
         var newUser = new User
         {   
@@ -42,7 +44,7 @@ public class AccountService : IAccountService
         {
             return new BaseResponse<User>() {Data = null, Succeeded =  false, Message = identityResult.Errors.FirstOrDefault()?.Description!, Errors = identityResult.Errors.FirstOrDefault()?.Description};
         }
-        var addToRoleResult = await _userManager.AddToRoleAsync(newUser, Roles.User);
+        var addToRoleResult = await _userManager.AddToRoleAsync(newUser, createAdmin ? Roles.Admin: Roles.User);
         if (!addToRoleResult.Succeeded)
         {
             return new BaseResponse<User>() {Data = null, Succeeded =  false, Message = addToRoleResult.Errors.FirstOrDefault()?.Description!, Errors = addToRoleResult.Errors.FirstOrDefault()?.Description};

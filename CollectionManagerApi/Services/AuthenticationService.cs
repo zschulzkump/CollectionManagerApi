@@ -31,13 +31,13 @@ private readonly UserManager<User> _userManager;
         }
 
         var accessToken = await _tokenProviderService.CreateAccessTokenAsync(user);
-
+        var keepSignedInDays = int.TryParse(Environment.GetEnvironmentVariable("KEEP_SIGNED_IN_DAYS"),  out var result) ? result : 1 ;
         var refreshToken = new RefreshToken()
         {
             Id = Guid.CreateVersion7().ToString(),
             UserId = user.Id,
             Token = _tokenProviderService.GenerateRefreshToken(),
-            ExpiresOnUtc = DateTime.UtcNow.AddDays(7),
+            ExpiresOnUtc = DateTime.UtcNow.AddDays(keepSignedInDays),
             UserAgent = httpRequestMeta.UserAgent,
             RemoteIpV4Address = httpRequestMeta.IpV4Address,
             RemoteIpV6Address = httpRequestMeta.IpV6Address,

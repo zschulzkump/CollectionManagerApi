@@ -20,13 +20,14 @@ public static class DependencyInjection
     }
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        string? databasePort = Environment.GetEnvironmentVariable("POSTGRES_PORT");
-        string? databaseName = Environment.GetEnvironmentVariable("POSTGRES_DB");
-        string? databaseUser = Environment.GetEnvironmentVariable("POSTGRES_USER");
-        string? databasePass = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD");
+        string? databaseServer = Environment.GetEnvironmentVariable("DATABASE_SERVER");
+        string? databasePort = Environment.GetEnvironmentVariable("DATABASE_PORT");
+        string? databaseName = Environment.GetEnvironmentVariable("DATABASE_NAME");
+        string? databaseUser = Environment.GetEnvironmentVariable("DATABASE_USERNAME");
+        string? databasePass = Environment.GetEnvironmentVariable("DATABASE_PASSWORD");
         services.AddDbContext<ApplicationDbContext>(options =>
         {
-            options.UseNpgsql($"Server=collectionmanager-db;Port={databasePort};Database={databaseName};User ID={databaseUser};Password={databasePass}");
+            options.UseNpgsql($"Server={databaseServer};Port={databasePort};Database={databaseName};User ID={databaseUser};Password={databasePass}");
         });
         
         return services;

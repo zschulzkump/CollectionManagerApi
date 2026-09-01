@@ -46,6 +46,13 @@ public class ApplicationDbContext : IdentityDbContext<User>
             
         });
         
+        modelBuilder.Entity<CollectionGroup>()
+            .HasOne(r => r.User)
+            .WithMany(r => r.CollectionGroups)
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+        
         modelBuilder.Entity<Storage>(entity =>
         {
             entity.HasKey(r => r.Id);
@@ -54,6 +61,13 @@ public class ApplicationDbContext : IdentityDbContext<User>
             entity.HasIndex(r => r.Name).IsUnique();
             
         });
+        
+        modelBuilder.Entity<Storage>()
+            .HasOne(r => r.User)
+            .WithMany(r => r.Storages)
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
 
         modelBuilder.Entity<CollectionItem>(entity =>
         {
@@ -62,6 +76,13 @@ public class ApplicationDbContext : IdentityDbContext<User>
             entity.Property(r => r.Name).IsRequired();
             entity.Property(r => r.Comments).HasMaxLength(1000);
         });
+        
+        modelBuilder.Entity<CollectionItem>()
+            .HasOne(r => r.User)
+            .WithMany(r => r.CollectionItems)
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
         
         modelBuilder.Entity<CollectionItem>()
             .HasOne(c => c.CollectionGroup)
@@ -85,10 +106,24 @@ public class ApplicationDbContext : IdentityDbContext<User>
             entity.Property(r => r.Name).IsRequired();
         });
         
+        modelBuilder.Entity<CustomAttribute>()
+            .HasOne(r => r.User)
+            .WithMany(r => r.CustomAttributes)
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+        
         modelBuilder.Entity<CollectionItemCustomAttribute>(entity =>
         {
             entity.HasKey(r => r.Id);
         });
+        
+        modelBuilder.Entity<CollectionItemCustomAttribute>()
+            .HasOne(r => r.User)
+            .WithMany(r => r.CollectionItemCustomAttributes)
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
 
         modelBuilder.Entity<CollectionItemCustomAttribute>()
             .HasOne(c => c.CollectionItem)
@@ -106,13 +141,19 @@ public class ApplicationDbContext : IdentityDbContext<User>
             entity.HasKey(r => r.Id);
         });
         modelBuilder.Entity<Tag>()
+            .HasOne(r => r.User)
+            .WithMany(r => r.Tags)
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+        
+        modelBuilder.Entity<Tag>()
             .HasMany(t => t.CollectionItems)
             .WithMany(c => c.Tags);
 
         modelBuilder.Entity<CollectionItemTag>(entity =>
         {
-            entity.HasKey(r => r.CollectionItemId);
-            entity.HasKey(c => c.TagId);
+            entity.HasKey(r => new {r.CollectionItemId , r.TagId});
             entity.HasIndex(c => c.TagId).IsUnique();
             entity.HasIndex(c => c.CollectionItemId).IsUnique();
         });
@@ -121,6 +162,13 @@ public class ApplicationDbContext : IdentityDbContext<User>
         {
             entity.HasKey(r => r.Id);
         });
+        
+        modelBuilder.Entity<ItemDocument>()
+            .HasOne(r => r.User)
+            .WithMany(r => r.ItemDocuments)
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
 
         modelBuilder.Entity<ItemDocument>()
             .HasOne(r => r.CollectionItem)
@@ -132,6 +180,13 @@ public class ApplicationDbContext : IdentityDbContext<User>
         {
             entity.HasKey(r => r.Id);
         });
+        
+        modelBuilder.Entity<ItemImage>()
+            .HasOne(r => r.User)
+            .WithMany(r => r.ItemImages)
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
 
         modelBuilder.Entity<ItemImage>()
             .HasOne(r => r.CollectionItem)

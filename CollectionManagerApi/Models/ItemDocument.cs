@@ -8,6 +8,8 @@ public class ItemDocument
     [Required]
     public string Id { get; set; } = string.Empty;
     [Required]
+    public string UserId { get; set; } = string.Empty;
+    [Required]
     public string CollectionItemId { get; set; }  = string.Empty;
     public string S3ImageId { get; set; } = string.Empty;
 
@@ -20,4 +22,5 @@ public class ItemDocument
     public DateTime DateModified { get; set; } = DateTime.Now;
     
     public CollectionItem CollectionItem { get; set; } = new CollectionItem();
+    public User User { get; set; }
 }

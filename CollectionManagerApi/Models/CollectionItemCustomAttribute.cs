@@ -7,6 +7,8 @@ public class CollectionItemCustomAttribute
     [Key]
     [Required]
     public string Id { get; set; } = string.Empty;
+    [Required]
+    public string UserId { get; set; } = string.Empty;
     public string CustomAttributeId { get; set; } = string.Empty;
     public string CollectionItemId { get; set; } = string.Empty;
     [Required]
@@ -20,4 +22,5 @@ public class CollectionItemCustomAttribute
     
     public CustomAttribute CustomAttribute { get; set; } = new CustomAttribute();
     public CollectionItem CollectionItem { get; set; } = new CollectionItem();
+    public User User { get; set; }
 }

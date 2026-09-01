@@ -8,6 +8,8 @@ public class Storage
     [Required]
     public string Id { get; set; } = string.Empty;
     [Required]
+    public string UserId { get; set; } = string.Empty;
+    [Required]
     [MaxLength(100)]
     public string Name { get; set; } = string.Empty;
     [Required]
@@ -16,4 +18,5 @@ public class Storage
     public DateTime DateModified { get; set; } = DateTime.Now;
     
     public ICollection<CollectionItem> CollectionItems { get; set; } = new List<CollectionItem>();
+    public User User { get; set; }
 }

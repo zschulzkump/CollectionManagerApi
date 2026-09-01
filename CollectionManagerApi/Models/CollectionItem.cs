@@ -8,6 +8,8 @@ public class CollectionItem
     [Required]
     public string Id { get; set; } = string.Empty;
     [Required]
+    public string UserId { get; set; } = string.Empty;
+    [Required]
     public string CollectionGroupId { get; set; } = string.Empty;
     [Required]
     public string StorageId { get; set; } = string.Empty;
@@ -39,4 +41,5 @@ public class CollectionItem
     
     public ICollection<ItemDocument> Documents { get; set; } = new List<ItemDocument>();
     public ICollection<ItemImage> Images { get; set; } = new List<ItemImage>();
+    public User User { get; set; }
 }

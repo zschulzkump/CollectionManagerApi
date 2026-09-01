@@ -8,6 +8,8 @@ public class CustomAttribute
     [Required]
     public string Id { get; set; } = string.Empty;
     [Required]
+    public string UserId { get; set; } = string.Empty;
+    [Required]
     [MaxLength(255)]
     public string Name { get; set; } = string.Empty;
     [Required]
@@ -16,4 +18,5 @@ public class CustomAttribute
     public DateTime DateModified { get; set; } = DateTime.Now;
     
     public ICollection<CollectionItemCustomAttribute> CollectionItemsCustomAttributes { get; set; } = new List<CollectionItemCustomAttribute>();
+    public User User { get; set; }
 }

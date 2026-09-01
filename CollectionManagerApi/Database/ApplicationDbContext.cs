@@ -1,4 +1,3 @@
-using Amazon.S3.Model;
 using CollectionManagerApi.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

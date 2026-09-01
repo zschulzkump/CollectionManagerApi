@@ -8,7 +8,7 @@ public class CollectionItem
     [Required]
     public string Id { get; set; } = string.Empty;
     [Required]
-    public string CategoryId { get; set; } = string.Empty;
+    public string CollectionGroupId { get; set; } = string.Empty;
     [Required]
     public string StorageId { get; set; } = string.Empty;
     [Required]
@@ -28,7 +28,7 @@ public class CollectionItem
     public DateTime DateModified { get; set; } = DateTime.Now;
     
 
-    public Category Category { get; set; } = new Category();
+    public CollectionGroup CollectionGroup { get; set; } = new CollectionGroup();
 
     public Storage Storage { get; set; }  = new Storage();
     

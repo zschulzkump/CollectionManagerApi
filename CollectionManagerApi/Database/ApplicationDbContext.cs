@@ -37,7 +37,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
             entity.HasKey(r => r.Id);
         });
         
-        modelBuilder.Entity<Category>(entity =>
+        modelBuilder.Entity<CollectionGroup>(entity =>
         {
             entity.HasKey(r => r.Id);
             entity.Property(r => r.Name).HasMaxLength(100);
@@ -64,9 +64,9 @@ public class ApplicationDbContext : IdentityDbContext<User>
         });
         
         modelBuilder.Entity<CollectionItem>()
-            .HasOne(c => c.Category)
+            .HasOne(c => c.CollectionGroup)
             .WithMany(c => c.CollectionItems)
-            .HasForeignKey(c => c.CategoryId)
+            .HasForeignKey(c => c.CollectionGroupId)
             .OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CollectionItem>()
             .HasOne(c => c.Storage)
@@ -144,7 +144,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
     }
     
     public DbSet<RefreshToken> RefreshTokens { get; set; }
-    public DbSet<Category> Categories { get; set; }
+    public DbSet<CollectionGroup> CollectionGroups { get; set; }
     public DbSet<Storage> Storages { get; set; }
     public DbSet<CollectionItem> CollectionItems { get; set; }
     public DbSet<CustomAttribute> CustomAttributes { get; set; }

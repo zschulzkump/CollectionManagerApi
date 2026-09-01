@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CollectionManagerApi.Models;
 
-public class Category
+public class CollectionGroup
 {
     [Key]
     [Required]

@@ -1,7 +1,6 @@
 using CollectionManagerApi.Database;
 using CollectionManagerApi.DTOs.Requests;
 using CollectionManagerApi.DTOs.Responses;
-using CollectionManagerApi.HelperClasses;
 using CollectionManagerApi.Mapping;
 using CollectionManagerApi.Models;
 using Microsoft.AspNetCore.Identity;
@@ -21,7 +20,7 @@ private readonly UserManager<User> _userManager;
         _tokenProviderService = tokenProviderService;
         _context = context;
     }
-    public async Task<BaseResponse<AuthenticationResponse>> Login(LoginRequest request, HttpRequestMeta httpRequestMeta, CancellationToken token)
+    public async Task<BaseResponse<AuthenticationResponse>> Login(LoginRequest request, CancellationToken token)
     {
         var user = await _userManager.FindByEmailAsync(request.Email);
         
@@ -38,9 +37,6 @@ private readonly UserManager<User> _userManager;
             UserId = user.Id,
             Token = _tokenProviderService.GenerateRefreshToken(),
             ExpiresOnUtc = DateTime.UtcNow.AddDays(keepSignedInDays),
-            UserAgent = httpRequestMeta.UserAgent,
-            RemoteIpV4Address = httpRequestMeta.IpV4Address,
-            RemoteIpV6Address = httpRequestMeta.IpV6Address,
         };
         
 

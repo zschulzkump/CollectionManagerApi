@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using Asp.Versioning;
 using CollectionManagerApi.DTOs.Requests;
-using CollectionManagerApi.HelperClasses;
 using CollectionManagerApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,16 +28,7 @@ public class AuthenticationController: ControllerBase
     {
         try
         {
-            var userAgent = _httpContextAccessor.HttpContext?.Request.Headers.UserAgent.ToString();
-            var ipV4Address = _httpContextAccessor.HttpContext?.Request.HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString();
-            var ipV6Address = _httpContextAccessor.HttpContext?.Request.HttpContext.Connection.RemoteIpAddress?.MapToIPv6().ToString();
-            var httpRequestMeta = new HttpRequestMeta()
-            {
-                UserAgent = userAgent,
-                IpV4Address = ipV4Address,
-                IpV6Address = ipV6Address
-            };
-            var result = await _authenticationService.Login(request, httpRequestMeta, token);
+            var result = await _authenticationService.Login(request, token);
             if (!result.Succeeded)
             {
                 return BadRequest(result.Errors);

@@ -35,9 +35,7 @@ public class AccountService : IAccountService
         {   
             Id = Guid.CreateVersion7().ToString(),
             UserName =  request.Email,
-            Email = request.Email,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
+            Email = request.Email
         };
         var identityResult = await _userManager.CreateAsync(newUser, request.Password);
         if (!identityResult.Succeeded)

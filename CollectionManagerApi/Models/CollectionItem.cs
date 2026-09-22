@@ -8,16 +8,16 @@ public class CollectionItem
     [Required]
     public string Id { get; set; } = string.Empty;
     [Required]
-    public string UserId { get; set; } = string.Empty;
+    public string UserId { get; set; }
     [Required]
-    public string CollectionGroupId { get; set; } = string.Empty;
+    public string CollectionGroupId { get; set; }
     [Required]
-    public string StorageId { get; set; } = string.Empty;
+    public string StorageId { get; set; }
     [Required]
     [MaxLength(150)]
     public string Name { get; set; } = string.Empty;
     
-    public string Comments { get; set; } = string.Empty;
+    public string? Comments { get; set; } = string.Empty;
     [Required]
     public bool HasDocuments { get; set; } = false;
     [Required]
@@ -25,14 +25,14 @@ public class CollectionItem
     [Required]
     public bool IsOnDisplay { get; set; } = false;
     [Required]
-    public DateTime DateCreated { get; set; } = DateTime.Now;
+    public DateTime DateCreated { get; set; } = DateTime.UtcNow;
     [Required]
-    public DateTime DateModified { get; set; } = DateTime.Now;
+    public DateTime DateModified { get; set; } = DateTime.UtcNow;
     
+    public User User { get; set; }
+    public CollectionGroup CollectionGroup { get; set; }
 
-    public CollectionGroup CollectionGroup { get; set; } = new CollectionGroup();
-
-    public Storage Storage { get; set; }  = new Storage();
+    public Storage Storage { get; set; }
     
     public ICollection<CollectionItemCustomAttribute> CollectionItemsCustomAttributes { get; set; } = new List<CollectionItemCustomAttribute>();
     
@@ -41,5 +41,5 @@ public class CollectionItem
     
     public ICollection<ItemDocument> Documents { get; set; } = new List<ItemDocument>();
     public ICollection<ItemImage> Images { get; set; } = new List<ItemImage>();
-    public User User { get; set; }
+    
 }

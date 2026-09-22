@@ -24,5 +24,73 @@ public static class ApiEndpoints
             public const string Login = $"{Base}/login";
             public const string Logout = $"{Base}/logout";
         }
+        public static class Collections
+        {
+            private const string Base = $"{ApiBase}/collections";
+            public const string Create = $"{Base}/";
+            public const string GetAll = $"{Base}/";
+            public const string GetById = $"{Base}/{{id:guid}}";
+            public const string GetByName = $"{Base}/{{name:string}}";
+            public const string Update = $"{Base}/{{id:guid}}";
+            public const string Delete = $"{Base}/{{id:guid}}";
+        }
+        public static class Storages
+        {
+            private const string Base = $"{ApiBase}/storages";
+            public const string Create = $"{Base}/";
+            public const string GetAll = $"{Base}/";
+            public const string GetById = $"{Base}/{{id:guid}}";
+            public const string GetByName = $"{Base}/{{name:string}}";
+            public const string Update = $"{Base}/{{id:guid}}";
+            public const string Delete = $"{Base}/{{id:guid}}";
+        }
+        
+        public static class CollectionItems
+        {
+            private const string Base = $"{ApiBase}/collection-items";
+            public const string Create = $"{ApiBase}/collections/{{id:guid}}/collection-items";
+            public const string GetAll = $"{Base}/";
+            public const string GetById = $"{Base}/{{id:guid}}";
+            public const string GetByName = $"{Base}/{{name:string}}";
+            public const string Update = $"{Base}/{{id:guid}}";
+            public const string Delete = $"{Base}/{{id:guid}}";
+        }
+        public static class CustomAttributes
+        {
+            private const string Base = $"{ApiBase}/custom-attributes";
+            public const string Create = $"{Base}/";
+            public const string GetAll = $"{Base}/";
+            public const string GetById = $"{Base}/{{id:guid}}";
+            public const string GetByName = $"{Base}/{{name:string}}";
+            public const string Update = $"{Base}/{{id:guid}}";
+            public const string Delete = $"{Base}/{{id:guid}}";
+        }
+        public static class CollectionItemAttributes
+        {
+            private const string Base = $"{ApiBase}/collection-item-attributes";
+            public const string Create = $"{ApiBase}/collection-items/{{id:guid}}/attributes";
+            public const string GetAll = $"{ApiBase}/collection-items/{{id:guid}}/attributes";
+            public const string GetById = $"{Base}/{{id:guid}}";
+            public const string Update = $"{Base}/{{id:guid}}";
+            public const string Delete = $"{Base}/{{id:guid}}";
+        }
+        public static class CollectionItemImages
+        {
+            private const string Base = $"{ApiBase}/collection-item-images";
+            public const string Create = $"{ApiBase}/collection-items/{{id:guid}}/images";
+            public const string GetAll = $"{ApiBase}/collection-items/{{id:guid}}/images";
+            public const string GetById = $"{Base}/{{id:guid}}";
+            public const string Update = $"{Base}/{{id:guid}}";
+            public const string Delete = $"{Base}/{{id:guid}}";
+        }
+        public static class CollectionItemDocuments
+        {
+            private const string Base = $"{ApiBase}/collection-item-documents";
+            public const string Create = $"{ApiBase}/collection-items/{{id:guid}}/documents";
+            public const string GetAll = $"{ApiBase}/collection-items/{{id:guid}}/documents";
+            public const string GetById = $"{Base}/{{id:guid}}";
+            public const string Update = $"{Base}/{{id:guid}}";
+            public const string Delete = $"{Base}/{{id:guid}}";
+        }
     }
 }

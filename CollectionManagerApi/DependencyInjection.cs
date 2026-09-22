@@ -1,5 +1,5 @@
-using CollectionManagerApi.Controllers.v1;
 using CollectionManagerApi.Database;
+using CollectionManagerApi.HelperClasses;
 using CollectionManagerApi.Models;
 using CollectionManagerApi.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,11 +13,22 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
+        services.AddTransient<HttpContextAccessorHelper>();
+        services.AddTransient<FileManager>();
+        services.AddTransient<IS3Service, S3Service>();
         services.AddTransient<IAccountService, AccountService>();
         services.AddScoped<ITokenProviderService, TokenProviderService>();
         services.AddTransient<IAuthenticationService, AuthenticationService>();
+        services.AddTransient<ICollectionGroupService, CollectionGroupService>();
+        services.AddTransient<IStorageService, StorageService>();
+        services.AddTransient<ICollectionItemService, CollectionItemService>();
+        services.AddTransient<ICustomAttributeService, CustomAttributeService>();
+        services.AddTransient<ICollectionItemAttributeService, CollectionItemAttributeService>();
+        services.AddTransient<ICollectionItemImageService, CollectionItemImageService>();
+        services.AddTransient<ICollectionItemDocumentService, CollectionItemDocumentService>();
         return services;
     }
+    
     public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         string? databaseServer = Environment.GetEnvironmentVariable("DATABASE_SERVER");

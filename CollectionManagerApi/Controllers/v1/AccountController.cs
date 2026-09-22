@@ -1,8 +1,13 @@
 using Asp.Versioning;
 using CollectionManagerApi.Database;
 using CollectionManagerApi.DTOs.Requests;
+using CollectionManagerApi.DTOs.Requests.Account;
+using CollectionManagerApi.DTOs.Responses;
+using CollectionManagerApi.DTOs.Responses.Account;
+using CollectionManagerApi.HelperClasses;
 using CollectionManagerApi.Mapping;
 using CollectionManagerApi.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,27 +17,34 @@ namespace CollectionManagerApi.Controllers.v1;
 [ApiVersion(1)]
 public class AccountController : ControllerBase
 {
-        private readonly IAccountService _accountService;
-    public AccountController(IAccountService accountService)
+    private readonly IAccountService _accountService;
+    private readonly IValidator<RegisterUser> _validator;
+    private readonly HttpContextAccessorHelper _httpContextAccessorHelper;
+    public AccountController(IAccountService accountService, IValidator<RegisterUser> validator,  HttpContextAccessorHelper httpContextAccessorHelper)
     {
         _accountService = accountService;
+        _validator = validator;
+        _httpContextAccessorHelper = httpContextAccessorHelper;
     }
 
     [MapToApiVersion(1)]
-    [HttpPost(ApiEndpoints.V1.Accounts.Create)]
+    [HttpPost(ApiEndpoints.V1.Accounts.Create, Name = "RegisterUser")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> RegisterV1([FromBody] RegisterUser request, CancellationToken token)
+    public async Task<ActionResult<UserResponse>> RegisterV1([FromBody] RegisterUser request, CancellationToken token)
     {
         try
         {
+            var validationResult = await _validator.ValidateAsync(request, token);
+            if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
             var result = await _accountService.Register(request, token);
-            if (!result.Succeeded)
+            return result switch
             {
-                return BadRequest(result.Errors);
-            }
-            return Created();
+                { StatusCode: InternalStatusCodes.DbStatus1201Created } => CreatedAtRoute("GetUserById", new { id = result.Data!.UserId }, result.Data),
+                { StatusCode: InternalStatusCodes.DbStatus1501InsertError } or { StatusCode: InternalStatusCodes.Status5500UnknownError } => Problem(),
+                _ => BadRequest()
+            };
         }
         catch (Exception e)
         {
@@ -42,21 +54,23 @@ public class AccountController : ControllerBase
     
     [MapToApiVersion(1)]
     [Authorize(Roles = Roles.Admin + "," + Roles.User)]
-    [HttpGet(ApiEndpoints.V1.Accounts.GetById)]
+    [HttpGet(ApiEndpoints.V1.Accounts.GetById, Name = "GetUserById")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetByIdV1([FromRoute] Guid id, CancellationToken token)
+    public async Task<ActionResult<UserResponse>> GetUserById([FromRoute] Guid id, CancellationToken token)
     {
         try
         {
-            var response = await _accountService.GetById(id, token);
-            if (response.Data == null || !response.Succeeded)
+            var result = await _accountService.GetById(id, token);
+            return result switch
             {
-                return NotFound("User not found");
-            }
-            var user = response.Data;
-            return Ok(user.MapToUserResponse());
+                { StatusCode: InternalStatusCodes.DbStatus1200Ok } => Ok(result.Data),
+                { StatusCode: InternalStatusCodes.DbStatus1404NotFound } => NotFound(),
+                { StatusCode: InternalStatusCodes.Status5500UnknownError } => Problem(),
+                _ => BadRequest()
+            };
         }
         catch (Exception e)
         {
@@ -66,22 +80,23 @@ public class AccountController : ControllerBase
     
     [MapToApiVersion(1)]
     [Authorize(Roles = Roles.Admin)]
-    [HttpGet(ApiEndpoints.V1.Accounts.GetAll)]
+    [HttpGet(ApiEndpoints.V1.Accounts.GetAll, Name = "GetAllUsers")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAllV1(CancellationToken token)
     {
         try
         {
-            var response = await _accountService.GetAll(token);
-            if (response.Data == null || !response.Succeeded)
+            var result = await _accountService.GetAll(token);
+            return result switch
             {
-                return NotFound("No users found");
-            }
-            var users = response.Data;
-            var list = users.Select(user => user.MapToUserResponse()).ToList();
-            return Ok(list);
+                { StatusCode: InternalStatusCodes.DbStatus1200Ok } => Ok(result.Data),
+                { StatusCode: InternalStatusCodes.DbStatus1404NotFound } => NotFound(),
+                { StatusCode: InternalStatusCodes.Status5500UnknownError } => Problem(),
+                _ => BadRequest()
+            };
         }
         catch (Exception e)
         {

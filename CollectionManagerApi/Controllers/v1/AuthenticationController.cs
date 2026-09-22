@@ -1,7 +1,12 @@
 using System.Security.Claims;
 using Asp.Versioning;
 using CollectionManagerApi.DTOs.Requests;
+using CollectionManagerApi.DTOs.Requests.Authentication;
+using CollectionManagerApi.DTOs.Responses;
+using CollectionManagerApi.DTOs.Responses.Authentication;
+using CollectionManagerApi.HelperClasses;
 using CollectionManagerApi.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,28 +18,47 @@ public class AuthenticationController: ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    public AuthenticationController(IAuthenticationService authenticationService, IHttpContextAccessor httpContextAccessor)
+    private readonly IValidator<LoginRequest> _loginInValidator;
+    private readonly IValidator<LoginRefreshTokenRequest> _loginRefreshTokenValidator;
+    private readonly IValidator<LogoutRefreshTokenRequest> _logoutRefreshTokenValidator;
+    private readonly HttpContextAccessorHelper _httpContextAccessorHelper;
+    public AuthenticationController(
+        IAuthenticationService authenticationService,
+        IHttpContextAccessor httpContextAccessor,
+        IValidator<LoginRequest> loginInValidator,
+        IValidator<LoginRefreshTokenRequest> loginRefreshTokenValidator,
+        IValidator<LogoutRefreshTokenRequest> logoutRefreshTokenValidator,
+        HttpContextAccessorHelper httpContextAccessorHelper
+        )
     {
         _authenticationService = authenticationService;
         _httpContextAccessor = httpContextAccessor;
+        _loginInValidator = loginInValidator;
+        _loginRefreshTokenValidator = loginRefreshTokenValidator;
+        _logoutRefreshTokenValidator = logoutRefreshTokenValidator;
+        _httpContextAccessorHelper = httpContextAccessorHelper;
     }
     
     [MapToApiVersion(1)]
     [HttpPost(ApiEndpoints.V1.Authentication.Login)]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> LoginV1([FromBody] LoginRequest request, CancellationToken token)
+    public async Task<ActionResult<AuthenticationResponse>> Login([FromBody] LoginRequest request, CancellationToken token)
     {
         try
         {
+            var validationResult = await _loginInValidator.ValidateAsync(request, token);
+            if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
             var result = await _authenticationService.Login(request, token);
-            if (!result.Succeeded)
+            return result switch
             {
-                return BadRequest(result.Errors);
-            }
-
-            return Ok(result.Data);
+                { StatusCode: InternalStatusCodes.DbStatus1200Ok } => Ok(result.Data),
+                { StatusCode: InternalStatusCodes.DbStatus1404NotFound } => NotFound(),
+                { StatusCode: InternalStatusCodes.Status5500UnknownError } => Problem(),
+                _ => BadRequest()
+            };
         }
         catch (Exception e)
         {
@@ -48,17 +72,22 @@ public class AuthenticationController: ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> LoginWithRefreshTokenV1(LoginRefreshTokenRequest request,
+    public async Task<ActionResult<TokenResponse>> LoginWithRefreshToken(LoginRefreshTokenRequest request,
         CancellationToken token)
     {
         try
         {
+            var validationResult = await _loginRefreshTokenValidator.ValidateAsync(request, token);
+            if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
             var result = await _authenticationService.LoginWithRefreshToken(request, token);
-            if (!result.Succeeded)
+            return result switch
             {
-                return BadRequest(result.Errors);
-            }
-            return Ok(result.Data);
+                { StatusCode: InternalStatusCodes.DbStatus1200Ok } => Ok(result.Data),
+                { StatusCode: InternalStatusCodes.AuthStatus3501TokenExpired } => BadRequest(),
+                { StatusCode: InternalStatusCodes.DbStatus1404NotFound } => NotFound(),
+                { StatusCode: InternalStatusCodes.Status5500UnknownError } => Problem(),
+                _ => BadRequest()
+            };
         }
         catch (Exception e)
         {
@@ -72,47 +101,20 @@ public class AuthenticationController: ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> RevokeRefreshTokensV1([FromRoute] Guid id,
+    public async Task<IActionResult> RevokeRefreshTokens([FromRoute] Guid id,
         CancellationToken token)
     {
         try
         {
-            Guid.TryParse(_httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid userId);
-        
-            if (userId == Guid.Empty)
+            var userId = _httpContextAccessorHelper.GetUserId();
+            if (userId == Guid.Empty) return BadRequest("User not found");
+            var result = await _authenticationService.RevokeRefreshTokens(userId, token);
+            return result switch
             {
-                return BadRequest("User not found");
-            }
-        
-            await _authenticationService.RevokeRefreshTokens(userId, token);
-        }
-        catch (Exception e)
-        {
-            return Problem();
-        }
-        
-        return NoContent();
-    }
-    [Authorize]
-    [MapToApiVersion(1)]
-    [HttpGet(ApiEndpoints.V1.Accounts.RefreshToken)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetRefreshTokensV1([FromRoute] Guid id,
-        CancellationToken token)
-    {
-        try
-        {
-            Guid.TryParse(_httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier), out Guid userId);
-        
-            if (userId == Guid.Empty)
-            {
-                return BadRequest("User not found");
-            }
-        
-            var response = await _authenticationService.GetRefreshTokens(userId, token);
-            return Ok(response);
+                { StatusCode: InternalStatusCodes.DbStatus1200Ok } => NoContent(),
+                { StatusCode: InternalStatusCodes.Status5500UnknownError } => Problem(),
+                _ => BadRequest()
+            };
         }
         catch (Exception e)
         {
@@ -126,16 +128,19 @@ public class AuthenticationController: ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> LogoutV1(LogoutRefreshTokenRequest request,CancellationToken token)
+    public async Task<IActionResult> Logout(LogoutRefreshTokenRequest request,CancellationToken token)
     {
         try
         {
+            var validationResult = await _logoutRefreshTokenValidator.ValidateAsync(request, token);
+            if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
             var result = await _authenticationService.Logout(request, token);
-            if (!result)
+            return result switch
             {
-                return BadRequest("Invalid refresh token");
-            }
-            return NoContent();
+                { StatusCode: InternalStatusCodes.DbStatus1200Ok } => NoContent(),
+                { StatusCode: InternalStatusCodes.Status5500UnknownError } => Problem(),
+                _ => BadRequest()
+            };
         }
         catch (Exception e)
         {

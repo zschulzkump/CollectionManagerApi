@@ -21,6 +21,6 @@ public class ItemDocument
     [Required]
     public DateTime DateModified { get; set; } = DateTime.Now;
     
-    public CollectionItem CollectionItem { get; set; } = new CollectionItem();
+    public CollectionItem CollectionItem { get; set; }
     public User User { get; set; }
 }

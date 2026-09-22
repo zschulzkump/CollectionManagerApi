@@ -19,8 +19,8 @@ public class CollectionItemCustomAttribute
     public DateTime DateCreated { get; set; } = DateTime.Now;
     [Required]
     public DateTime DateModified { get; set; } = DateTime.Now;
-    
-    public CustomAttribute CustomAttribute { get; set; } = new CustomAttribute();
-    public CollectionItem CollectionItem { get; set; } = new CollectionItem();
     public User User { get; set; }
+    public CustomAttribute CustomAttribute { get; set; }
+    public CollectionItem CollectionItem { get; set; }
+    
 }

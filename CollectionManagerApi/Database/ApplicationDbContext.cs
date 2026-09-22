@@ -17,6 +17,20 @@ public class ApplicationDbContext : IdentityDbContext<User>
     {
         base.OnModelCreating(modelBuilder);
         
+        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+        {
+            var properties = entityType.GetProperties()
+                .Where(p => p.ClrType == typeof(DateTime) || p.ClrType == typeof(DateTime?));
+
+            foreach (var property in properties)
+            {
+                property.SetValueConverter(new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime, DateTime>(
+                    v => v.Kind == DateTimeKind.Utc ? v : v.ToUniversalTime(), // Ensure UTC when writing
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc)            // Ensure UTC when reading
+                ));
+            }
+        }
+        
         modelBuilder.Entity<RefreshToken>(entity =>
         {
             entity.HasKey(r => r.Id);
@@ -80,8 +94,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
             .HasOne(r => r.User)
             .WithMany(r => r.CollectionItems)
             .HasForeignKey(r => r.UserId)
-            .OnDelete(DeleteBehavior.Cascade)
-            .IsRequired();
+            .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<CollectionItem>()
             .HasOne(c => c.CollectionGroup)
@@ -116,13 +129,12 @@ public class ApplicationDbContext : IdentityDbContext<User>
         {
             entity.HasKey(r => r.Id);
         });
-        
+
         modelBuilder.Entity<CollectionItemCustomAttribute>()
             .HasOne(r => r.User)
             .WithMany(r => r.CollectionItemCustomAttributes)
             .HasForeignKey(r => r.UserId)
-            .OnDelete(DeleteBehavior.Cascade)
-            .IsRequired();
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<CollectionItemCustomAttribute>()
             .HasOne(c => c.CollectionItem)
@@ -166,8 +178,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
             .HasOne(r => r.User)
             .WithMany(r => r.ItemDocuments)
             .HasForeignKey(r => r.UserId)
-            .OnDelete(DeleteBehavior.Cascade)
-            .IsRequired();
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<ItemDocument>()
             .HasOne(r => r.CollectionItem)
@@ -184,8 +195,7 @@ public class ApplicationDbContext : IdentityDbContext<User>
             .HasOne(r => r.User)
             .WithMany(r => r.ItemImages)
             .HasForeignKey(r => r.UserId)
-            .OnDelete(DeleteBehavior.Cascade)
-            .IsRequired();
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<ItemImage>()
             .HasOne(r => r.CollectionItem)

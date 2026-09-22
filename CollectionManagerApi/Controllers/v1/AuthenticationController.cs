@@ -40,7 +40,7 @@ public class AuthenticationController: ControllerBase
     }
     
     [MapToApiVersion(1)]
-    [HttpPost(ApiEndpoints.V1.Authentication.Login)]
+    [HttpPost(ApiEndpoints.V1.Authentication.Login, Name = "Login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -68,7 +68,7 @@ public class AuthenticationController: ControllerBase
     }
     
     [MapToApiVersion(1)]
-    [HttpPost(ApiEndpoints.V1.Accounts.RefreshToken)]
+    [HttpPost(ApiEndpoints.V1.Authentication.RefreshToken, Name = "LoginWithRefreshToken")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -97,7 +97,7 @@ public class AuthenticationController: ControllerBase
     
     [Authorize]
     [MapToApiVersion(1)]
-    [HttpDelete(ApiEndpoints.V1.Accounts.RefreshToken)]
+    [HttpDelete(ApiEndpoints.V1.Authentication.RefreshToken, Name = "RevokeRefreshToken")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -124,7 +124,7 @@ public class AuthenticationController: ControllerBase
     
     [Authorize]
     [MapToApiVersion(1)]
-    [HttpPost(ApiEndpoints.V1.Authentication.Logout)]
+    [HttpPost(ApiEndpoints.V1.Authentication.Logout, Name = "Logout")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

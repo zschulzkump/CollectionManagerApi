@@ -64,6 +64,23 @@ public class CollectionItemService : ICollectionItemService
             return new BaseResponse<CollectionItemResponse>(){Data = null, Succeeded = false, StatusCode = InternalStatusCodes.Status5500UnknownError};
         }
     }
+    
+    public async Task<BaseResponse<List<CollectionItemResponse>>> GetAllByCollectionId(Guid userId, Guid collectionGroupId, CancellationToken token)
+    {
+        try
+        {
+            var results = await _context.CollectionItems
+                .Where(x => x.UserId == userId.ToString() && x.CollectionGroupId == collectionGroupId.ToString())
+                .Select(x => x.MapToCollectionItemResponse())
+                .ToListAsync(token);
+            return new BaseResponse<List<CollectionItemResponse>>() { Data = results, Succeeded = true, StatusCode = InternalStatusCodes.DbStatus1200Ok };
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return new BaseResponse<List<CollectionItemResponse>>(){Data = null, Succeeded = false, StatusCode = InternalStatusCodes.Status5500UnknownError};
+        }
+    }
 
     public async Task<BaseResponse<List<CollectionItemResponse>>> GetAll(Guid userId, CancellationToken token)
     {

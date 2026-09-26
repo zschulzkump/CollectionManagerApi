@@ -63,6 +63,32 @@ public class CollectionItemsController : ControllerBase
     
     [MapToApiVersion(1)]
     [Authorize(Roles = Roles.Admin + "," + Roles.User)]
+    [HttpGet(ApiEndpoints.V1.CollectionItems.GetAllByCollectionId, Name = "GetAllCollectionItemsByCollectionId")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<List<CollectionItemResponse>>> GetAllByCollectionId([FromRoute] Guid id,CancellationToken cancellationToken)
+    {
+        try
+        {
+            var userId = _httpContextAccessorHelper.GetUserId();
+            var result = await _collectionItemService.GetAllByCollectionId(userId, id, cancellationToken);
+            return result switch
+            {
+                {  StatusCode: InternalStatusCodes.DbStatus1200Ok } => Ok(result.Data),
+                {  StatusCode: InternalStatusCodes.Status5500UnknownError } => Problem(),
+                _ => BadRequest()
+            };
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return Problem();
+        }
+    }
+    
+    [MapToApiVersion(1)]
+    [Authorize(Roles = Roles.Admin + "," + Roles.User)]
     [HttpGet(ApiEndpoints.V1.CollectionItems.GetAll, Name = "GetAllCollectionItems")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

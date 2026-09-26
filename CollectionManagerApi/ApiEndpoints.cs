@@ -48,6 +48,7 @@ public static class ApiEndpoints
         {
             private const string Base = $"{ApiBase}/collection-items";
             public const string Create = $"{ApiBase}/collections/{{id:guid}}/collection-items";
+            public const string GetAllByCollectionId = $"{ApiBase}/collections/{{id:guid}}/collection-items";
             public const string GetAll = $"{Base}/";
             public const string GetById = $"{Base}/{{id:guid}}";
             public const string GetByName = $"{Base}/{{name:string}}";

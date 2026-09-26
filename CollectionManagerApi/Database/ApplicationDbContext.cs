@@ -165,8 +165,6 @@ public class ApplicationDbContext : IdentityDbContext<User>
         modelBuilder.Entity<CollectionItemTag>(entity =>
         {
             entity.HasKey(r => new {r.CollectionItemId , r.TagId});
-            entity.HasIndex(c => c.TagId).IsUnique();
-            entity.HasIndex(c => c.CollectionItemId).IsUnique();
         });
 
         modelBuilder.Entity<ItemDocument>(entity =>

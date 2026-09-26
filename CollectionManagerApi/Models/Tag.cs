@@ -17,7 +17,7 @@ public class Tag
     [Required]
     public DateTime DateModified { get; set; } = DateTime.Now;
     
-    public ICollection<CollectionItemTag> CollectionItemTags { get; set; } = new List<CollectionItemTag>();
-    public ICollection<CollectionItem> CollectionItems { get; set; } = new List<CollectionItem>();
+    public ICollection<CollectionItemTag> CollectionItemTags { get; set; }
+    public ICollection<CollectionItem> CollectionItems { get; set; }
     public User User { get; set; }
 }

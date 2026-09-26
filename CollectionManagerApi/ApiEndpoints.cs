@@ -91,5 +91,16 @@ public static class ApiEndpoints
             public const string Update = $"{Base}/{{id:guid}}";
             public const string Delete = $"{Base}/{{id:guid}}";
         }
+        
+        public static class CollectionItemTags
+        {
+            private const string Base = $"{ApiBase}/collection-item-tags";
+            public const string Create = $"{ApiBase}/collection-items/{{id:guid}}/tags";
+            public const string GetAllByCollectionId = $"{ApiBase}/collection-items/{{id:guid}}/tags";
+            public const string GetAll = $"{Base}/";
+            public const string GetById = $"{Base}/{{id:guid}}";
+            public const string Update = $"{Base}/{{id:guid}}";
+            public const string Delete = $"{Base}/{{id:guid}}";
+        }
     }
 }

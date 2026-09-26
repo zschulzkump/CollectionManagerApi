@@ -26,6 +26,7 @@ public static class DependencyInjection
         services.AddTransient<ICollectionItemAttributeService, CollectionItemAttributeService>();
         services.AddTransient<ICollectionItemImageService, CollectionItemImageService>();
         services.AddTransient<ICollectionItemDocumentService, CollectionItemDocumentService>();
+        services.AddTransient<ITagsService, TagsService>();
         return services;
     }
     

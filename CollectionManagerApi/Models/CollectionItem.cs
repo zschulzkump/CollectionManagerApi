@@ -34,12 +34,12 @@ public class CollectionItem
 
     public Storage Storage { get; set; }
     
-    public ICollection<CollectionItemCustomAttribute> CollectionItemsCustomAttributes { get; set; } = new List<CollectionItemCustomAttribute>();
+    public ICollection<CollectionItemCustomAttribute> CollectionItemsCustomAttributes { get; set; }
     
-    public ICollection<CollectionItemTag> CollectionItemTags { get; set; } = new List<CollectionItemTag>();
-    public ICollection<Tag> Tags { get; set; } = new List<Tag>();
+    public ICollection<CollectionItemTag> CollectionItemTags { get; set; }
+    public ICollection<Tag> Tags { get; set; }
     
-    public ICollection<ItemDocument> Documents { get; set; } = new List<ItemDocument>();
-    public ICollection<ItemImage> Images { get; set; } = new List<ItemImage>();
+    public ICollection<ItemDocument> Documents { get; set; }
+    public ICollection<ItemImage> Images { get; set; }
     
 }

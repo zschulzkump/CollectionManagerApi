@@ -19,12 +19,10 @@ public class AccountController : ControllerBase
 {
     private readonly IAccountService _accountService;
     private readonly IValidator<RegisterUser> _validator;
-    private readonly HttpContextAccessorHelper _httpContextAccessorHelper;
-    public AccountController(IAccountService accountService, IValidator<RegisterUser> validator,  HttpContextAccessorHelper httpContextAccessorHelper)
+    public AccountController(IAccountService accountService, IValidator<RegisterUser> validator)
     {
         _accountService = accountService;
         _validator = validator;
-        _httpContextAccessorHelper = httpContextAccessorHelper;
     }
 
     [MapToApiVersion(1)]

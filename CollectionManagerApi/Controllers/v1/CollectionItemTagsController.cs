@@ -2,6 +2,7 @@ using Asp.Versioning;
 using CollectionManagerApi.Database;
 using CollectionManagerApi.DTOs.Requests.Tags;
 using CollectionManagerApi.DTOs.Responses.Tags;
+using CollectionManagerApi.Extensions;
 using CollectionManagerApi.HelperClasses;
 using CollectionManagerApi.Services;
 using FluentValidation;
@@ -17,17 +18,16 @@ public class CollectionItemTagsController : ControllerBase
     private readonly ITagsService _tagsService;
     private readonly IValidator<CreateTagRequest> _createTagRequestValidator;
     private readonly IValidator<UpdateTagRequest> _updateTagRequestValidator;
-    private readonly HttpContextAccessorHelper _httpContextAccessorHelper;
+    private readonly HttpContextAccessor _httpContextAccessor;
     public CollectionItemTagsController(
         ITagsService tagsService,
         IValidator<CreateTagRequest> createTagRequestValidator,
         IValidator<UpdateTagRequest> updateTagRequestValidator,
-        HttpContextAccessorHelper httpContextAccessorHelper)
-    {
+        HttpContextAccessor httpContextAccessor){
         _tagsService = tagsService;
         _createTagRequestValidator = createTagRequestValidator;
         _updateTagRequestValidator = updateTagRequestValidator;
-        _httpContextAccessorHelper = httpContextAccessorHelper;
+        _httpContextAccessor = httpContextAccessor;
     }
     
      [MapToApiVersion(1)]
@@ -42,7 +42,7 @@ public class CollectionItemTagsController : ControllerBase
         {
             var validationResult = await _createTagRequestValidator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _tagsService.Create(userId, id, request, cancellationToken);
             return result switch
             {
@@ -68,7 +68,7 @@ public class CollectionItemTagsController : ControllerBase
     {
         try
         {
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _tagsService.GetAllByCollectionId(userId, id,cancellationToken);
             return result switch
             {
@@ -94,7 +94,7 @@ public class CollectionItemTagsController : ControllerBase
     {
         try
         {
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _tagsService.GetAll(userId,cancellationToken);
             return result switch
             {
@@ -150,7 +150,7 @@ public class CollectionItemTagsController : ControllerBase
         {
             var validationResult = await _updateTagRequestValidator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _tagsService.Update(userId, id, request, cancellationToken);
             return result switch
             {
@@ -178,7 +178,7 @@ public class CollectionItemTagsController : ControllerBase
     {
         try
         {
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _tagsService.Delete(userId, id, cancellationToken);
             return result switch
             {

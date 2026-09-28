@@ -3,6 +3,7 @@ using Asp.Versioning;
 using CollectionManagerApi.Database;
 using CollectionManagerApi.DTOs.Requests.CollectionItemDocuments;
 using CollectionManagerApi.DTOs.Responses.CollectionItemDocuments;
+using CollectionManagerApi.Extensions;
 using CollectionManagerApi.HelperClasses;
 using CollectionManagerApi.Services;
 using FluentValidation;
@@ -16,7 +17,8 @@ namespace CollectionManagerApi.Controllers.v1;
 public class CollectionItemDocumentsController : ControllerBase
 {
     private readonly ICollectionItemDocumentService _collectionItemDocumentService;
-    private readonly HttpContextAccessorHelper _httpContextAccessorHelper;
+    private readonly HttpContextAccessor _httpContextAccessor;
+    
     private readonly IAmazonS3 _s3Client;
     private readonly IValidator<CreateCollectionItemDocumentsRequest> _createCollectionItemDocumetsRequestValidator;
     private readonly IValidator<UpdateCollectionItemDocumentsRequest> _updateCollectionItemDocumetsRequestValidator;
@@ -26,13 +28,13 @@ public class CollectionItemDocumentsController : ControllerBase
 
     public CollectionItemDocumentsController(
         ICollectionItemDocumentService collectionItemDocumentService,
-        HttpContextAccessorHelper httpContextAccessorHelper,
+        HttpContextAccessor  httpContextAccessor,
         IAmazonS3 s3Client,
         IValidator<CreateCollectionItemDocumentsRequest> createCollectionItemDocumetsRequestValidator,
         IValidator<UpdateCollectionItemDocumentsRequest> updateCollectionItemDocumetsRequestValidator)
     {
         _collectionItemDocumentService = collectionItemDocumentService;
-        _httpContextAccessorHelper = httpContextAccessorHelper;
+        _httpContextAccessor = httpContextAccessor;
         _s3Client = s3Client;
         _createCollectionItemDocumetsRequestValidator = createCollectionItemDocumetsRequestValidator;
         _updateCollectionItemDocumetsRequestValidator = updateCollectionItemDocumetsRequestValidator;
@@ -50,7 +52,7 @@ public class CollectionItemDocumentsController : ControllerBase
         {
             var validationResult = await _createCollectionItemDocumetsRequestValidator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionItemDocumentService.Create(userId: userId, collectionItemId: id, request: request,cancellationToken);
             return result switch
             {
@@ -104,7 +106,7 @@ public class CollectionItemDocumentsController : ControllerBase
     {
         try
         {
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionItemDocumentService.GetAll(userId, id, cancellationToken);
             return result switch
             {
@@ -133,7 +135,7 @@ public class CollectionItemDocumentsController : ControllerBase
         {
             var validationResult = await _updateCollectionItemDocumetsRequestValidator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionItemDocumentService.Update(userId, id, request, cancellationToken);
             return result switch
             {
@@ -161,7 +163,7 @@ public class CollectionItemDocumentsController : ControllerBase
     {
         try
         {
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionItemDocumentService.Delete(userId, id, cancellationToken);
             if (result.Data == null) return NotFound();
             return result switch

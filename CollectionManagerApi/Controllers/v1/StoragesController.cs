@@ -3,6 +3,7 @@ using Asp.Versioning;
 using CollectionManagerApi.Database;
 using CollectionManagerApi.DTOs.Requests.Storages;
 using CollectionManagerApi.DTOs.Responses.Storages;
+using CollectionManagerApi.Extensions;
 using CollectionManagerApi.HelperClasses;
 using CollectionManagerApi.Services;
 using FluentValidation;
@@ -16,20 +17,17 @@ namespace CollectionManagerApi.Controllers.v1;
 public class StoragesController : ControllerBase
 {
     private readonly IStorageService  _storageService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly HttpContextAccessor _httpContextAccessor;
     private readonly IValidator<StorageRequest> _storageRequestValidator;
-    private readonly HttpContextAccessorHelper _httpContextAccessorHelper;
+    
     public StoragesController(
         IStorageService storageService,
-        IHttpContextAccessor httpContextAccessor,
-        IValidator<StorageRequest> storageRequestValidator,
-        HttpContextAccessorHelper httpContextAccessorHelper
-        )
+        HttpContextAccessor httpContextAccessor,
+        IValidator<StorageRequest> storageRequestValidator)
     {
         _storageService = storageService;
         _httpContextAccessor = httpContextAccessor;
         _storageRequestValidator = storageRequestValidator;
-        _httpContextAccessorHelper = httpContextAccessorHelper;
     }
 
     [MapToApiVersion(1)]
@@ -44,7 +42,7 @@ public class StoragesController : ControllerBase
         {
             var validationResult = await _storageRequestValidator.ValidateAsync(request, cancellation: token);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _storageService.Create(userId, request, token);
             return result switch
             {
@@ -72,7 +70,7 @@ public class StoragesController : ControllerBase
         try
         {
             var id =  _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _storageService.GetAll(userId, token);
             return result switch
             {
@@ -128,7 +126,7 @@ public class StoragesController : ControllerBase
         {
             var validationResult = await _storageRequestValidator.ValidateAsync(request, cancellation: token);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _storageService.Update(userId, id, request, token);
             return result switch
             {
@@ -156,7 +154,7 @@ public class StoragesController : ControllerBase
     {
         try
         {
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _storageService.Delete(userId, id, token);
             return result switch
             {

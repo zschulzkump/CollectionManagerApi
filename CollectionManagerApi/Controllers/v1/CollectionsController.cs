@@ -3,6 +3,7 @@ using Asp.Versioning;
 using CollectionManagerApi.Database;
 using CollectionManagerApi.DTOs.Requests.CollectionGroup;
 using CollectionManagerApi.DTOs.Responses.Collections;
+using CollectionManagerApi.Extensions;
 using CollectionManagerApi.HelperClasses;
 using CollectionManagerApi.Services;
 using FluentValidation;
@@ -18,17 +19,18 @@ public class CollectionsController: ControllerBase
     private readonly ICollectionGroupService _collectionGroupService;
     private readonly IValidator<CreateCollectionGroupRequest> _createCollectionGroupRequestValidator;
     private readonly IValidator<UpdateCollectionGroupRequest> _updateCollectionGroupRequestValidator;
-    private readonly HttpContextAccessorHelper _httpContextAccessorHelper;
+    private readonly HttpContextAccessor _httpContextAccessor;
+    
 
     public CollectionsController(ICollectionGroupService collectionGroupService,
         IValidator<CreateCollectionGroupRequest> createCollectionGroupRequestValidator,
         IValidator<UpdateCollectionGroupRequest> updateCollectionGroupRequestValidator,
-        HttpContextAccessorHelper httpContextAccessorHelper)
+        HttpContextAccessor httpContextAccessor)
     {
         _collectionGroupService = collectionGroupService;
         _createCollectionGroupRequestValidator = createCollectionGroupRequestValidator;
         _updateCollectionGroupRequestValidator = updateCollectionGroupRequestValidator;
-        _httpContextAccessorHelper = httpContextAccessorHelper;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     [MapToApiVersion(1)]
@@ -43,7 +45,7 @@ public class CollectionsController: ControllerBase
         {
             var validationResult = await _createCollectionGroupRequestValidator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionGroupService.Create(userId, request, cancellationToken);
             return result switch
             {
@@ -69,7 +71,7 @@ public class CollectionsController: ControllerBase
     {
         try
         {
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionGroupService.GetAll(userId, cancellationToken);
             return result switch
             {
@@ -125,7 +127,7 @@ public class CollectionsController: ControllerBase
         {
             var validationResult = await _updateCollectionGroupRequestValidator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionGroupService.Update(userId, id, request, cancellationToken);
             return result switch
             {
@@ -153,7 +155,7 @@ public class CollectionsController: ControllerBase
     {
         try
         {
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionGroupService.Delete(userId, id, cancellationToken);
             return result switch
             {

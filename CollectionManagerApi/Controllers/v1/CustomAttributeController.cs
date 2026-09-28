@@ -5,6 +5,7 @@ using CollectionManagerApi.DTOs.Requests.CollectionGroup;
 using CollectionManagerApi.DTOs.Requests.CustomAttribute;
 using CollectionManagerApi.DTOs.Responses.Collections;
 using CollectionManagerApi.DTOs.Responses.CustomAttribute;
+using CollectionManagerApi.Extensions;
 using CollectionManagerApi.HelperClasses;
 using CollectionManagerApi.Services;
 using FluentValidation;
@@ -18,18 +19,19 @@ namespace CollectionManagerApi.Controllers.v1;
 public class CustomAttributeController : ControllerBase
 {
     private readonly ICustomAttributeService _customAttributeService;
-    private readonly HttpContextAccessorHelper _httpContextAccessorHelper;
+    private readonly HttpContextAccessor _httpContextAccessor;
+    
     private readonly IValidator<CreateCustomAttributeRequest> _createCustomAttributeRequestValidator;
     private readonly IValidator<UpdateCustomAttributeRequest> _updateCustomAttributeRequestValidator;
     
     public CustomAttributeController(
         ICustomAttributeService customAttributeService,
-        HttpContextAccessorHelper httpContextAccessorHelper,
+        HttpContextAccessor httpContextAccessor,
         IValidator<CreateCustomAttributeRequest> createCustomAttributeRequestValidator,
         IValidator<UpdateCustomAttributeRequest> updateCustomAttributeRequestValidator)
     {
         _customAttributeService = customAttributeService;
-        _httpContextAccessorHelper = httpContextAccessorHelper;
+        _httpContextAccessor = httpContextAccessor;
         _createCustomAttributeRequestValidator = createCustomAttributeRequestValidator;
         _updateCustomAttributeRequestValidator = updateCustomAttributeRequestValidator;
     }
@@ -46,7 +48,7 @@ public class CustomAttributeController : ControllerBase
         {
             var validationResult = await _createCustomAttributeRequestValidator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _customAttributeService.Create(userId, request, cancellationToken);
             return result switch
             {
@@ -72,7 +74,7 @@ public class CustomAttributeController : ControllerBase
     {
         try
         {
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _customAttributeService.GetAll(userId, cancellationToken);
             return result switch
             {
@@ -128,7 +130,7 @@ public class CustomAttributeController : ControllerBase
         {
             var validationResult = await _updateCustomAttributeRequestValidator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _customAttributeService.Update(userId, id, request, cancellationToken);
             return result switch
             {
@@ -156,7 +158,7 @@ public class CustomAttributeController : ControllerBase
     {
         try
         {
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _customAttributeService.Delete(userId, id, cancellationToken);
             return result switch
             {

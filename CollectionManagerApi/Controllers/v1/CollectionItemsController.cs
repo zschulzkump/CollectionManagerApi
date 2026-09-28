@@ -3,6 +3,7 @@ using Asp.Versioning;
 using CollectionManagerApi.Database;
 using CollectionManagerApi.DTOs.Requests.CollectionItem;
 using CollectionManagerApi.DTOs.Responses.CollectionItems;
+using CollectionManagerApi.Extensions;
 using CollectionManagerApi.Services;
 using CollectionManagerApi.HelperClasses;
 using FluentValidation;
@@ -18,19 +19,18 @@ public class CollectionItemsController : ControllerBase
     private readonly ICollectionItemService _collectionItemService;
     private readonly IValidator<CreateCollectionItemRequest> _createCollectionItemValidator;
     private readonly IValidator<UpdateCollectionItemRequest> _updateCollectionItemValidator;
-    private readonly HttpContextAccessorHelper _httpContextAccessorHelper;
+    private readonly HttpContextAccessor _httpContextAccessor;
 
     public CollectionItemsController(
         ICollectionItemService collectionItemService,
         IValidator<CreateCollectionItemRequest> collectionItemValidator,
         IValidator<UpdateCollectionItemRequest> updateCollectionItemValidator,
-        HttpContextAccessorHelper  httpContextAccessorHelper)
-        
+        HttpContextAccessor httpContextAccessor)
     {
         _collectionItemService = collectionItemService;
         _createCollectionItemValidator = collectionItemValidator;
         _updateCollectionItemValidator = updateCollectionItemValidator;
-        _httpContextAccessorHelper = httpContextAccessorHelper;
+        _httpContextAccessor =  httpContextAccessor;
     }
     
     [MapToApiVersion(1)]
@@ -45,7 +45,7 @@ public class CollectionItemsController : ControllerBase
         {
             var validationResult = await _createCollectionItemValidator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionItemService.Create(userId, id, request, cancellationToken);
             return result switch
             {
@@ -71,7 +71,7 @@ public class CollectionItemsController : ControllerBase
     {
         try
         {
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionItemService.GetAllByCollectionId(userId, id, cancellationToken);
             return result switch
             {
@@ -97,7 +97,7 @@ public class CollectionItemsController : ControllerBase
     {
         try
         {
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionItemService.GetAll(userId, cancellationToken);
             return result switch
             {
@@ -153,7 +153,7 @@ public class CollectionItemsController : ControllerBase
         {
             var validationResult = await _updateCollectionItemValidator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionItemService.Update(userId, id, request, cancellationToken);
             return result switch
             {
@@ -181,7 +181,7 @@ public class CollectionItemsController : ControllerBase
     {
         try
         {
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionItemService.Delete(userId, id, cancellationToken);
             return result switch
             {

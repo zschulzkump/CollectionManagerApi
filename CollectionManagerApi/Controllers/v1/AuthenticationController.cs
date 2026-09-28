@@ -6,6 +6,7 @@ using CollectionManagerApi.DTOs.Responses;
 using CollectionManagerApi.DTOs.Responses.Authentication;
 using CollectionManagerApi.HelperClasses;
 using CollectionManagerApi.Services;
+using CollectionManagerApi.Extensions;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,26 +18,22 @@ namespace CollectionManagerApi.Controllers.v1;
 public class AuthenticationController: ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly HttpContextAccessor _httpContextAccessor;
     private readonly IValidator<LoginRequest> _loginInValidator;
     private readonly IValidator<LoginRefreshTokenRequest> _loginRefreshTokenValidator;
     private readonly IValidator<LogoutRefreshTokenRequest> _logoutRefreshTokenValidator;
-    private readonly HttpContextAccessorHelper _httpContextAccessorHelper;
     public AuthenticationController(
         IAuthenticationService authenticationService,
-        IHttpContextAccessor httpContextAccessor,
+        HttpContextAccessor httpContextAccessor,
         IValidator<LoginRequest> loginInValidator,
         IValidator<LoginRefreshTokenRequest> loginRefreshTokenValidator,
-        IValidator<LogoutRefreshTokenRequest> logoutRefreshTokenValidator,
-        HttpContextAccessorHelper httpContextAccessorHelper
-        )
+        IValidator<LogoutRefreshTokenRequest> logoutRefreshTokenValidator)
     {
         _authenticationService = authenticationService;
         _httpContextAccessor = httpContextAccessor;
         _loginInValidator = loginInValidator;
         _loginRefreshTokenValidator = loginRefreshTokenValidator;
         _logoutRefreshTokenValidator = logoutRefreshTokenValidator;
-        _httpContextAccessorHelper = httpContextAccessorHelper;
     }
     
     [MapToApiVersion(1)]
@@ -106,7 +103,7 @@ public class AuthenticationController: ControllerBase
     {
         try
         {
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             if (userId == Guid.Empty) return BadRequest("User not found");
             var result = await _authenticationService.RevokeRefreshTokens(userId, token);
             return result switch

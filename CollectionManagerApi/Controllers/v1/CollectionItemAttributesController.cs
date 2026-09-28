@@ -2,6 +2,7 @@ using Asp.Versioning;
 using CollectionManagerApi.Database;
 using CollectionManagerApi.DTOs.Requests.CollectionItemAttribute;
 using CollectionManagerApi.DTOs.Responses.CollectionItemAttribute;
+using CollectionManagerApi.Extensions;
 using CollectionManagerApi.HelperClasses;
 using CollectionManagerApi.Services;
 using FluentValidation;
@@ -15,18 +16,19 @@ namespace CollectionManagerApi.Controllers.v1;
 public class CollectionItemAttributesController : ControllerBase
 {
     private readonly ICollectionItemAttributeService _collectionItemAttributeService;
-    private readonly HttpContextAccessorHelper _httpContextAccessorHelper;
+    private readonly HttpContextAccessor _httpContextAccessor;
+    
     private readonly IValidator<CreateCollectionItemAttributeRequest> _createCollectionItemAttributeRequest;
     private readonly IValidator<UpdateCollectionItemAttributeRequest> _updateCollectionItemAttributeRequest;
 
     public CollectionItemAttributesController(
         ICollectionItemAttributeService collectionItemAttributeService,
-        HttpContextAccessorHelper httpContextAccessorHelper,
+        HttpContextAccessor  httpContextAccessor,
         IValidator<CreateCollectionItemAttributeRequest> createCollectionItemAttributeRequest,
         IValidator<UpdateCollectionItemAttributeRequest> updateCollectionItemAttributeRequest)
     {
         _collectionItemAttributeService = collectionItemAttributeService;
-        _httpContextAccessorHelper = httpContextAccessorHelper;
+        _httpContextAccessor = httpContextAccessor;
         _createCollectionItemAttributeRequest = createCollectionItemAttributeRequest;
         _updateCollectionItemAttributeRequest = updateCollectionItemAttributeRequest;
     }
@@ -43,7 +45,7 @@ public class CollectionItemAttributesController : ControllerBase
         {
             var validationResult = await _createCollectionItemAttributeRequest.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionItemAttributeService.Create(id, userId, request, cancellationToken);
             return result switch
             {
@@ -69,7 +71,7 @@ public class CollectionItemAttributesController : ControllerBase
     {
         try
         {
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionItemAttributeService.GetAll(userId, cancellationToken);
             return result switch
             {
@@ -125,7 +127,7 @@ public class CollectionItemAttributesController : ControllerBase
         {
             var validationResult = await _updateCollectionItemAttributeRequest.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionItemAttributeService.Update(userId,id, request, cancellationToken);
             return result switch
             {
@@ -153,7 +155,7 @@ public class CollectionItemAttributesController : ControllerBase
     {
         try
         {
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionItemAttributeService.Delete(userId, id, cancellationToken);
             return result switch
             {

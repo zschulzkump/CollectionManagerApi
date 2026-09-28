@@ -4,6 +4,7 @@ using Asp.Versioning;
 using CollectionManagerApi.Database;
 using CollectionManagerApi.DTOs.Requests.CollectionItemImages;
 using CollectionManagerApi.DTOs.Responses.CollectionItemImages;
+using CollectionManagerApi.Extensions;
 using CollectionManagerApi.HelperClasses;
 using CollectionManagerApi.Mapping;
 using CollectionManagerApi.Services;
@@ -18,7 +19,7 @@ namespace CollectionManagerApi.Controllers.v1;
 public class CollectionItemImagesController : ControllerBase
 {
     private readonly ICollectionItemImageService _collectionItemImageService;
-    private readonly HttpContextAccessorHelper _httpContextAccessorHelper;
+    private readonly HttpContextAccessor _httpContextAccessor;
     private readonly IAmazonS3 _s3Client;
     private readonly IValidator<CreateCollectionItemImagesRequest> _createCollectionItemImagesRequestValidator;
     private readonly IValidator<UpdateCollectionItemImagesRequest> _updateCollectionItemImagesRequestValidator;
@@ -28,13 +29,13 @@ public class CollectionItemImagesController : ControllerBase
 
     public CollectionItemImagesController(
         ICollectionItemImageService collectionItemImageService,
-        HttpContextAccessorHelper httpContextAccessorHelper,
+        HttpContextAccessor  httpContextAccessor,
         IAmazonS3 s3Client,
         IValidator<CreateCollectionItemImagesRequest> createCollectionItemImagesRequestValidator,
         IValidator<UpdateCollectionItemImagesRequest> updateCollectionItemImagesRequestValidator)
     {
         _collectionItemImageService = collectionItemImageService;
-        _httpContextAccessorHelper = httpContextAccessorHelper;
+        _httpContextAccessor = httpContextAccessor;
         _s3Client = s3Client;
         _createCollectionItemImagesRequestValidator = createCollectionItemImagesRequestValidator;
         _updateCollectionItemImagesRequestValidator = updateCollectionItemImagesRequestValidator;
@@ -52,7 +53,7 @@ public class CollectionItemImagesController : ControllerBase
         {
             var validationResult = await _createCollectionItemImagesRequestValidator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionItemImageService.Create(userId: userId, collectionItemId: id, request: request,cancellationToken);
             return result switch
             {
@@ -106,7 +107,7 @@ public class CollectionItemImagesController : ControllerBase
     {
         try
         {
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionItemImageService.GetAll(userId, id, cancellationToken);
             return result switch
             {
@@ -135,7 +136,7 @@ public class CollectionItemImagesController : ControllerBase
         {
             var validationResult = await _updateCollectionItemImagesRequestValidator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid) return BadRequest(validationResult.Errors);
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionItemImageService.Update(userId, id, request, cancellationToken);
             return result switch
             {
@@ -163,7 +164,7 @@ public class CollectionItemImagesController : ControllerBase
     {
         try
         {
-            var userId = _httpContextAccessorHelper.GetUserId();
+            var userId = _httpContextAccessor.GetUserIdAsGuid();
             var result = await _collectionItemImageService.Delete(userId, id, cancellationToken);
             if (result.Data == null) return NotFound();
             return result switch

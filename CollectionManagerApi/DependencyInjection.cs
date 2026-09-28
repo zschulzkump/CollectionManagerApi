@@ -13,7 +13,6 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
-        services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
         services.AddTransient<IS3Service, S3Service>();
         services.AddTransient<IAccountService, AccountService>();
         services.AddScoped<ITokenProviderService, TokenProviderService>();

@@ -19,13 +19,13 @@ public class CollectionItemsController : ControllerBase
     private readonly ICollectionItemService _collectionItemService;
     private readonly IValidator<CreateCollectionItemRequest> _createCollectionItemValidator;
     private readonly IValidator<UpdateCollectionItemRequest> _updateCollectionItemValidator;
-    private readonly HttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public CollectionItemsController(
         ICollectionItemService collectionItemService,
         IValidator<CreateCollectionItemRequest> collectionItemValidator,
         IValidator<UpdateCollectionItemRequest> updateCollectionItemValidator,
-        HttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor)
     {
         _collectionItemService = collectionItemService;
         _createCollectionItemValidator = collectionItemValidator;

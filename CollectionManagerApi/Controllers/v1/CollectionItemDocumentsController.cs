@@ -17,7 +17,7 @@ namespace CollectionManagerApi.Controllers.v1;
 public class CollectionItemDocumentsController : ControllerBase
 {
     private readonly ICollectionItemDocumentService _collectionItemDocumentService;
-    private readonly HttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     
     private readonly IAmazonS3 _s3Client;
     private readonly IValidator<CreateCollectionItemDocumentsRequest> _createCollectionItemDocumetsRequestValidator;
@@ -28,7 +28,7 @@ public class CollectionItemDocumentsController : ControllerBase
 
     public CollectionItemDocumentsController(
         ICollectionItemDocumentService collectionItemDocumentService,
-        HttpContextAccessor  httpContextAccessor,
+        IHttpContextAccessor  httpContextAccessor,
         IAmazonS3 s3Client,
         IValidator<CreateCollectionItemDocumentsRequest> createCollectionItemDocumetsRequestValidator,
         IValidator<UpdateCollectionItemDocumentsRequest> updateCollectionItemDocumetsRequestValidator)

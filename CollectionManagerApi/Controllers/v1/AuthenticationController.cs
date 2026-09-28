@@ -18,13 +18,13 @@ namespace CollectionManagerApi.Controllers.v1;
 public class AuthenticationController: ControllerBase
 {
     private readonly IAuthenticationService _authenticationService;
-    private readonly HttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IValidator<LoginRequest> _loginInValidator;
     private readonly IValidator<LoginRefreshTokenRequest> _loginRefreshTokenValidator;
     private readonly IValidator<LogoutRefreshTokenRequest> _logoutRefreshTokenValidator;
     public AuthenticationController(
         IAuthenticationService authenticationService,
-        HttpContextAccessor httpContextAccessor,
+        IHttpContextAccessor httpContextAccessor,
         IValidator<LoginRequest> loginInValidator,
         IValidator<LoginRefreshTokenRequest> loginRefreshTokenValidator,
         IValidator<LogoutRefreshTokenRequest> logoutRefreshTokenValidator)

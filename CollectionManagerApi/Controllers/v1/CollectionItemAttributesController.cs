@@ -16,14 +16,14 @@ namespace CollectionManagerApi.Controllers.v1;
 public class CollectionItemAttributesController : ControllerBase
 {
     private readonly ICollectionItemAttributeService _collectionItemAttributeService;
-    private readonly HttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     
     private readonly IValidator<CreateCollectionItemAttributeRequest> _createCollectionItemAttributeRequest;
     private readonly IValidator<UpdateCollectionItemAttributeRequest> _updateCollectionItemAttributeRequest;
 
     public CollectionItemAttributesController(
         ICollectionItemAttributeService collectionItemAttributeService,
-        HttpContextAccessor  httpContextAccessor,
+        IHttpContextAccessor  httpContextAccessor,
         IValidator<CreateCollectionItemAttributeRequest> createCollectionItemAttributeRequest,
         IValidator<UpdateCollectionItemAttributeRequest> updateCollectionItemAttributeRequest)
     {

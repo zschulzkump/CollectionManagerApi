@@ -17,12 +17,12 @@ namespace CollectionManagerApi.Controllers.v1;
 public class StoragesController : ControllerBase
 {
     private readonly IStorageService  _storageService;
-    private readonly HttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IValidator<StorageRequest> _storageRequestValidator;
     
     public StoragesController(
         IStorageService storageService,
-        HttpContextAccessor httpContextAccessor,
+        IHttpContextAccessor httpContextAccessor,
         IValidator<StorageRequest> storageRequestValidator)
     {
         _storageService = storageService;

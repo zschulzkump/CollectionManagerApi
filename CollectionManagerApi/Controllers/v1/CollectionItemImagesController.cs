@@ -19,7 +19,7 @@ namespace CollectionManagerApi.Controllers.v1;
 public class CollectionItemImagesController : ControllerBase
 {
     private readonly ICollectionItemImageService _collectionItemImageService;
-    private readonly HttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IAmazonS3 _s3Client;
     private readonly IValidator<CreateCollectionItemImagesRequest> _createCollectionItemImagesRequestValidator;
     private readonly IValidator<UpdateCollectionItemImagesRequest> _updateCollectionItemImagesRequestValidator;
@@ -29,7 +29,7 @@ public class CollectionItemImagesController : ControllerBase
 
     public CollectionItemImagesController(
         ICollectionItemImageService collectionItemImageService,
-        HttpContextAccessor  httpContextAccessor,
+        IHttpContextAccessor  httpContextAccessor,
         IAmazonS3 s3Client,
         IValidator<CreateCollectionItemImagesRequest> createCollectionItemImagesRequestValidator,
         IValidator<UpdateCollectionItemImagesRequest> updateCollectionItemImagesRequestValidator)

@@ -19,13 +19,13 @@ public class CollectionsController: ControllerBase
     private readonly ICollectionGroupService _collectionGroupService;
     private readonly IValidator<CreateCollectionGroupRequest> _createCollectionGroupRequestValidator;
     private readonly IValidator<UpdateCollectionGroupRequest> _updateCollectionGroupRequestValidator;
-    private readonly HttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     
 
     public CollectionsController(ICollectionGroupService collectionGroupService,
         IValidator<CreateCollectionGroupRequest> createCollectionGroupRequestValidator,
         IValidator<UpdateCollectionGroupRequest> updateCollectionGroupRequestValidator,
-        HttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor)
     {
         _collectionGroupService = collectionGroupService;
         _createCollectionGroupRequestValidator = createCollectionGroupRequestValidator;

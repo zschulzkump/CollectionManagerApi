@@ -19,14 +19,14 @@ namespace CollectionManagerApi.Controllers.v1;
 public class CustomAttributeController : ControllerBase
 {
     private readonly ICustomAttributeService _customAttributeService;
-    private readonly HttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     
     private readonly IValidator<CreateCustomAttributeRequest> _createCustomAttributeRequestValidator;
     private readonly IValidator<UpdateCustomAttributeRequest> _updateCustomAttributeRequestValidator;
     
     public CustomAttributeController(
         ICustomAttributeService customAttributeService,
-        HttpContextAccessor httpContextAccessor,
+        IHttpContextAccessor httpContextAccessor,
         IValidator<CreateCustomAttributeRequest> createCustomAttributeRequestValidator,
         IValidator<UpdateCustomAttributeRequest> updateCustomAttributeRequestValidator)
     {

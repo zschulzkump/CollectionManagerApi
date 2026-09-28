@@ -18,12 +18,12 @@ public class CollectionItemTagsController : ControllerBase
     private readonly ITagsService _tagsService;
     private readonly IValidator<CreateTagRequest> _createTagRequestValidator;
     private readonly IValidator<UpdateTagRequest> _updateTagRequestValidator;
-    private readonly HttpContextAccessor _httpContextAccessor;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     public CollectionItemTagsController(
         ITagsService tagsService,
         IValidator<CreateTagRequest> createTagRequestValidator,
         IValidator<UpdateTagRequest> updateTagRequestValidator,
-        HttpContextAccessor httpContextAccessor){
+        IHttpContextAccessor httpContextAccessor){
         _tagsService = tagsService;
         _createTagRequestValidator = createTagRequestValidator;
         _updateTagRequestValidator = updateTagRequestValidator;

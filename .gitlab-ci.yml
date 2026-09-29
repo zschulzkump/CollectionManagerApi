@@ -14,7 +14,7 @@ build_dotnet:
   stage: build
   image: mcr.microsoft.com/dotnet/sdk:10.0
   tags:
-    - build_dotnet
+    - docker
   script:
     - cd $SERVICES_DIR
     - dotnet restore
@@ -25,7 +25,7 @@ test_dotnet:
   stage: test
   image: mcr.microsoft.com/dotnet/sdk:10.0
   tags:
-    - test_dotnet
+    - docker
   script:
     - cd $SERVICES_DIR
     - dotnet test --configuration Release --no-build
@@ -35,7 +35,7 @@ publish_docker:
   stage: publish
   image: docker:24.0.9 # Reliable stable docker image
   tags:
-    - publish_docker
+    - docker
   services:
     - docker:24.0.9-dind # Enables Docker-in-Docker
   variables:

@@ -2,8 +2,8 @@
 USER root
 RUN apt-get -y update && apt-get install -y curl ca-certificates && \
     rm -rf /var/lib/apt/lists/*  
-COPY ["./certs/","/app-certs"]
-COPY ["./certs/collectionmanager-root-ca.crt","/usr/local/share/ca-certificates/"]
+COPY ["../certs/","/app-certs"]
+COPY ["../certs/collectionmanager-root-ca.crt","/usr/local/share/ca-certificates/"]
 RUN update-ca-certificates
 
 USER $APP_UID

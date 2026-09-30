@@ -16,7 +16,6 @@ build_dotnet:
   tags:
     - docker
   script:
-    - cd $SERVICES_DIR
     - dotnet restore
     - dotnet build --configuration Release --no-restore
 
@@ -27,7 +26,6 @@ test_dotnet:
   tags:
     - docker
   script:
-    - cd $SERVICES_DIR
     - dotnet test --configuration Release --no-build
 
 # --- PUBLISH STAGE (Docker Build & Push) ---
@@ -44,7 +42,6 @@ publish_docker:
     # Log into GitLab's built-in container registry securely
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    - cd $SERVICES_DIR
     # Build and tag the image
     - docker build -t $OBJECT_IMAGE -t $LATEST_IMAGE .
     # Push both the unique SHA tag and the 'latest' tag

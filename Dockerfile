@@ -10,7 +10,7 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["CollectionManagerApi/CollectionManagerApiCollectionManagerApi.csproj", "CollectionManagerApi/"]
+COPY ["CollectionManagerApi/CollectionManagerApi.csproj", "CollectionManagerApi/"]
 RUN dotnet restore "CollectionManagerApi/CollectionManagerApi.csproj"
 COPY . .
 WORKDIR "/src/CollectionManagerApi"

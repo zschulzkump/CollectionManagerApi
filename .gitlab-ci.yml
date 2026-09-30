@@ -1,0 +1,55 @@
+stages:
+  - build
+  - test
+  - publish
+
+variables:
+  # Predefined GitLab registry variables are automatically available
+  SERVICES_DIR: "CollectionManagerApi"
+  OBJECT_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
+  LATEST_IMAGE: $CI_REGISTRY_IMAGE:latest
+
+# --- BUILD STAGE ---
+build_dotnet:
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:10.0
+  tags:
+    - docker
+  script:
+    - cd $SERVICES_DIR
+    - dotnet restore
+    - dotnet build --configuration Release --no-restore
+
+# --- TEST STAGE ---
+test_dotnet:
+  stage: test
+  image: mcr.microsoft.com/dotnet/sdk:10.0
+  tags:
+    - docker
+  script:
+    - cd $SERVICES_DIR
+    - dotnet test --configuration Release --no-build
+
+# --- PUBLISH STAGE (Docker Build & Push) ---
+publish_docker:
+  stage: publish
+  image: docker:24.0.9 # Reliable stable docker image
+  tags:
+    - docker
+  services:
+    - docker:24.0.9-dind # Enables Docker-in-Docker
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+  before_script:
+    # Log into GitLab's built-in container registry securely
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - cd $SERVICES_DIR
+    # Build and tag the image
+    - docker build -t $OBJECT_IMAGE -t $LATEST_IMAGE .
+    # Push both the unique SHA tag and the 'latest' tag
+    - docker push $OBJECT_IMAGE
+    - docker push $LATEST_IMAGE
+  rules:
+    # Only push the Docker image when code merges to the main branch
+    - if: $CI_COMMIT_BRANCH == "main"

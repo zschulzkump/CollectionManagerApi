@@ -68,7 +68,7 @@ public static class DependencyInjection
             options.TokenValidationParameters.ValidIssuer = configuration["Jwt:Issuer"];
             options.TokenValidationParameters.ValidAudience = configuration["Jwt:Audience"];
             options.TokenValidationParameters.IssuerSigningKey =
-                new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]!));
+                new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET_KEY")!));
         });
 
         services.AddAuthorization();

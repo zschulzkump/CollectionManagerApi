@@ -24,7 +24,7 @@ public class TokenProviderService : ITokenProviderService
         var roles = await _userManager.GetRolesAsync(user);
 
         var signingKey = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]!));
+            Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET_KEY")!));
         var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
         List<Claim> claims =

@@ -53,8 +53,8 @@ builder.Services.AddAuthenticationAndAuthorization(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+var showApiDocs = Environment.GetEnvironmentVariable("SHOW_API_DOCS")?.ToLowerInvariant();
+if (showApiDocs is "true")
 {
     app.MapOpenApi();
     app.MapScalarApiReference(options =>
@@ -65,21 +65,26 @@ if (app.Environment.IsDevelopment())
             .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
         options.AddDocument("v1", "Collection Manager API Server v1", "/openapi/v1.json", isDefault: true);
     });
-    
-    await using var serviceScope = app.Services.CreateAsyncScope();
-    await using var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    await dbContext.Database.MigrateAsync();
-    
-    var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    if (!await roleManager.RoleExistsAsync(Roles.Admin))
-    {
-        await roleManager.CreateAsync(new IdentityRole(Roles.Admin));
-    }
+}
 
-    if (!await roleManager.RoleExistsAsync(Roles.User))
-    {
-        await roleManager.CreateAsync(new IdentityRole(Roles.User));
-    }
+await using var serviceScope = app.Services.CreateAsyncScope();
+await using var dbContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+await dbContext.Database.MigrateAsync();
+    
+var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+if (!await roleManager.RoleExistsAsync(Roles.Admin))
+{
+    await roleManager.CreateAsync(new IdentityRole(Roles.Admin));
+}
+
+if (!await roleManager.RoleExistsAsync(Roles.User))
+{
+    await roleManager.CreateAsync(new IdentityRole(Roles.User));
+}
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+
 }
 
 app.UseHttpsRedirection();
